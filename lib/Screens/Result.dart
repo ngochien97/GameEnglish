@@ -1,17 +1,34 @@
 // ignore_for_file: prefer_const_constructors, file_names, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
-import 'package:gamemoonwalk/Screens/PlayGame.dart';
-import 'package:gamemoonwalk/Screens/Splash.dart';
+import 'package:gamemoonwalk/modules/model/question_item.dart';
+import 'package:gamemoonwalk/screens/play_game.dart';
+import 'package:gamemoonwalk/screens/splash.dart';
 
 class Result extends StatefulWidget {
-  const Result({Key? key}) : super(key: key);
+  final List<Map<String, dynamic>> listQTrue;
+
+  const Result({
+    Key? key,
+    required this.listQTrue,
+  }) : super(key: key);
 
   @override
   _ResultState createState() => _ResultState();
 }
 
 class _ResultState extends State<Result> {
+  int totalTrue = 0;
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    for (var item in widget.listQTrue) {
+      if (int.parse('${item["right"]}') == 1) {
+        totalTrue++;
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,7 +45,9 @@ class _ResultState extends State<Result> {
                 children: [
                   Center(
                     child: Text(
-                      'Bạn đã làm tốt lắm!',
+                      totalTrue < 3
+                          ? 'Bạn cần cố gắng nhiều hơn!'
+                          : 'Bạn đã làm tốt lắm!',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 24,
@@ -47,24 +66,26 @@ class _ResultState extends State<Result> {
                       Icon(
                         Icons.star_rounded,
                         size: 40,
-                        color: Colors.yellow,
+                        color:
+                            totalTrue / 10 >= 0.3 ? Colors.yellow : Colors.grey,
                       ),
-                      Icon(
-                        Icons.star_rounded,
-                        size: 40,
-                        color: Colors.yellow,
-                      ),
-                      Icon(
-                        Icons.star_rounded,
-                        size: 40,
-                        color: Colors.grey,
-                      ),
+                      Icon(Icons.star_rounded,
+                          size: 40,
+                          color: totalTrue / 10 >= 0.6
+                              ? Colors.yellow
+                              : Colors.grey),
+                      Icon(Icons.star_rounded,
+                          size: 40,
+                          color: totalTrue / 10 >= 0.9
+                              ? Colors.yellow
+                              : Colors.grey),
                     ],
                   ),
                   SizedBox(height: 16),
                   Center(
                     child: Text(
-                      'Bạn trả lời đúng x/10 câu',
+                      'Bạn trả lời đúng $totalTrue/10 câu',
+                      // widget.listQTrue.length,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 20,
@@ -91,61 +112,49 @@ class _ResultState extends State<Result> {
                     ),
                   ),
                   Container(
-                    margin: EdgeInsets.only(top: 12, bottom: 16),
+                    margin: EdgeInsets.only(top: 12),
                     height: 1,
                     color: Colors.grey,
                   ),
                   Container(
-                    child: Row(
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Take a foto',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
+                    height: MediaQuery.of(context).size.height * 0.6,
+                    child: ListView.builder(
+                      itemBuilder: (context, index) {
+                        // QuestionItem quest = widget.listQTrue[index]['questionObject'];
+                        return ListTile(
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Câu trả lời:  ${widget.listQTrue[index]['right'] == 1 ? widget.listQTrue[index]['questionObject'].true_answer : (widget.listQTrue[index]['questionObject'].true_answer == widget.listQTrue[index]['questionObject'].answer_one ? widget.listQTrue[index]['questionObject'].answer_two : widget.listQTrue[index]['questionObject'].answer_one)} ',
                               ),
-                            ),
-                            Text(
-                              '(Take a photo)',
-                              style: TextStyle(
+                              Container(
+                                margin: EdgeInsets.only(top: 6),
+                                height: 0.5,
                                 color: Colors.grey,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
                               ),
-                            ),
-                          ],
-                        ),
-                        Expanded(child: Container()),
-                        Icon(
-                          Icons.close,
-                          color: Colors.red,
-                        ),
-                      ],
+                            ],
+                          ),
+                          title: Text(
+                            widget.listQTrue[index]['questionObject'].question,
+                          ),
+                          trailing: Icon(
+                            widget.listQTrue[index]['right'] == 1
+                                ? Icons.check
+                                : Icons.close,
+                            color: widget.listQTrue[index]['right'] == 1
+                                ? Colors.green
+                                : Colors.red,
+                          ),
+                        );
+                      },
+                      itemCount: widget.listQTrue.length,
                     ),
                   ),
                   SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    TurtleSwimming(title: '')),
-                          );
-                        },
-                        child: Container(
-                          height: 50,
-                          width: 50,
-                          child: Image.asset('lib/Asset/button-play.png'),
-                        ),
-                      ),
                       GestureDetector(
                         onTap: () {
                           // Navigator.push(
@@ -158,7 +167,22 @@ class _ResultState extends State<Result> {
                         child: Container(
                           height: 50,
                           width: 50,
-                          child: Image.asset('lib/Asset/button-replay.png'),
+                          child: Image.asset('lib/assets/button-replay.png'),
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => TurtleSwimming(title: ''),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          height: 50,
+                          width: 50,
+                          child: Image.asset('lib/assets/button-play.png'),
                         ),
                       ),
                     ],

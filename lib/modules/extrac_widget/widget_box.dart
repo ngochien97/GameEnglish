@@ -17,7 +17,7 @@ class box extends StatelessWidget {
       decoration: BoxDecoration(
         color: onClicked
             ? ((checkColor ? Colors.green : Colors.red))
-            : Colors.white,
+            : Colors.grey[300],
         borderRadius: BorderRadius.circular(8),
       ),
     );

@@ -3,7 +3,7 @@
 
 import 'dart:convert';
 
-import 'package:gamemoonwalk/Modules/Model/QuestionItem.dart';
+import 'package:gamemoonwalk/modules/model/question_item.dart';
 import 'package:http/http.dart' as http;
 
 String baseurl = 'api.myfeel.me';

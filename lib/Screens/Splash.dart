@@ -1,13 +1,15 @@
 // ignore_for_file: prefer_const_constructors, file_names, prefer_const_literals_to_create_immutables, must_be_immutable, unused_local_variable, deprecated_member_use, unnecessary_string_interpolations, avoid_print, prefer_final_fields, must_call_super
 
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:gamemoonwalk/Modules/Model/QuestionItem.dart';
-import 'package:gamemoonwalk/Modules/Model/ThemItem.dart';
-import 'package:gamemoonwalk/Modules/Request/Request_Catrgory.dart';
-import 'package:gamemoonwalk/Modules/Request/Request_question.dart';
-import 'package:gamemoonwalk/Screens/PlayGame.dart';
+import 'package:gamemoonwalk/modules/request/request_catrgory.dart';
+import 'package:gamemoonwalk/modules/request/request_question.dart';
+import 'package:gamemoonwalk/modules/model/question_item.dart';
+import 'package:gamemoonwalk/modules/model/theme_item.dart';
+// import 'package:gamemoonwalk/modules/netwrok/network_session.dart';
+import 'package:gamemoonwalk/screens/play_game.dart';
 
 void main() {
   runApp(const MyApp());
@@ -108,7 +110,7 @@ class _TurtleSwimmingState extends State<TurtleSwimming> {
           height: MediaQuery.of(context).size.height,
           decoration: const BoxDecoration(
             image: DecorationImage(
-              image: AssetImage('lib/Asset/bg.jpg'),
+              image: AssetImage('lib/assets/bg.jpg'),
               fit: BoxFit.cover,
             ),
           ),
@@ -126,9 +128,10 @@ class _TurtleSwimmingState extends State<TurtleSwimming> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => PlayGame(
-                                        data: filterTopicChoose10(item.id),
-                                      )),
+                                builder: (context) => PlayGame(
+                                  data: filterTopicChoose10(item.id),
+                                ),
+                              ),
                             );
                           },
                           child: Container(
@@ -137,8 +140,15 @@ class _TurtleSwimmingState extends State<TurtleSwimming> {
                             width: 150,
                             height: 150,
                             decoration: BoxDecoration(
-                              color: Colors.green[100],
                               borderRadius: BorderRadius.circular(75),
+                              gradient: LinearGradient(
+                                  colors: [
+                                    Colors.lightBlue,
+                                    Colors.lime,
+                                    Colors.cyanAccent
+                                  ],
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter),
                             ),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -153,7 +163,7 @@ class _TurtleSwimmingState extends State<TurtleSwimming> {
                                   ),
                                 ),
                                 Text(
-                                  '20 word',
+                                  item.TotalQuestion + 'word',
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 20,
