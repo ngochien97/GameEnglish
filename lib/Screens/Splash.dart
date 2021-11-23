@@ -105,7 +105,7 @@ class _TurtleSwimmingState extends State<TurtleSwimming> {
     return Scaffold(
       body: Center(
         child: Container(
-          padding: EdgeInsets.all(16),
+          padding: EdgeInsets.only(left: 16, right: 16, top: 22, bottom: 16),
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
           decoration: const BoxDecoration(

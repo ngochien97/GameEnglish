@@ -96,6 +96,7 @@ class _PlayGameState extends State<PlayGame> {
             MaterialPageRoute(
               builder: (context) => Result(
                 listQTrue: listQTrue,
+                data: widget.data,
               ),
             ),
           );
@@ -108,7 +109,7 @@ class _PlayGameState extends State<PlayGame> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        padding: EdgeInsets.all(16),
+        padding: EdgeInsets.only(top: 18, bottom: 16, left: 8, right: 8),
         width: MediaQuery.of(context).size.width,
         decoration: const BoxDecoration(
           image: DecorationImage(

@@ -7,10 +7,12 @@ import 'package:gamemoonwalk/screens/splash.dart';
 
 class Result extends StatefulWidget {
   final List<Map<String, dynamic>> listQTrue;
+  final List<QuestionItem> data;
 
   const Result({
     Key? key,
     required this.listQTrue,
+    required this.data,
   }) : super(key: key);
 
   @override
@@ -32,15 +34,12 @@ class _ResultState extends State<Result> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text('Turtle Swimming'),
-      // ),
       body: SingleChildScrollView(
         child: Column(
           children: [
             Container(
               color: Colors.blueAccent,
-              padding: EdgeInsets.only(top: 16),
+              padding: EdgeInsets.only(top: 26),
               child: Column(
                 children: [
                   Center(
@@ -98,6 +97,7 @@ class _ResultState extends State<Result> {
               ),
             ),
             Container(
+              color: Colors.grey[00],
               alignment: Alignment.topLeft,
               padding: EdgeInsets.all(8),
               child: Column(
@@ -117,10 +117,9 @@ class _ResultState extends State<Result> {
                     color: Colors.grey,
                   ),
                   Container(
-                    height: MediaQuery.of(context).size.height * 0.6,
+                    height: MediaQuery.of(context).size.height * 0.64,
                     child: ListView.builder(
                       itemBuilder: (context, index) {
-                        // QuestionItem quest = widget.listQTrue[index]['questionObject'];
                         return ListTile(
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -157,12 +156,14 @@ class _ResultState extends State<Result> {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //     builder: (context) => PlayGame(data: []),
-                          //   ),
-                          // );
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PlayGame(
+                                data: widget.data,
+                              ),
+                            ),
+                          );
                         },
                         child: Container(
                           height: 50,
