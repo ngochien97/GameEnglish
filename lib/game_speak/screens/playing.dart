@@ -1,39 +1,50 @@
-// ignore_for_file: prefer_const_constructors, file_names, prefer_const_literals_to_create_immutables, non_constant_identifier_names
+// ignore_for_file: prefer_const_constructors
 
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:gamemoonwalk/Screens/splash.dart';
+import 'package:gamemoonwalk/game_speak/model/listen_item.dart';
+import 'package:gamemoonwalk/game_speak/screens/summary.dart';
+import 'package:gamemoonwalk/game_speak/screens/wait_screen.dart';
 import 'package:gamemoonwalk/modules/extrac_widget/widget_box.dart';
-import 'package:gamemoonwalk/modules/model/question_item.dart';
-import 'package:gamemoonwalk/screens/result.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
-class PlayGame extends StatefulWidget {
-  const PlayGame({Key? key, required this.data}) : super(key: key);
-  final List<QuestionItem> data;
+class Playing extends StatefulWidget {
+  const Playing({Key? key, required this.data}) : super(key: key);
+  final List<ListenItem> data;
+
   @override
-  _PlayGameState createState() => _PlayGameState();
+  _PlayingState createState() => _PlayingState();
 }
 
-class _PlayGameState extends State<PlayGame> {
-  late AudioPlayer player;
+class _PlayingState extends State<Playing> {
   int index = 0;
   int count = 3;
-  List<bool> CheckColor = [];
+  List<bool> checkColor = [];
   List<bool> onClicked = [];
-  List<Map<String, dynamic>> listQTrue = [];
   late Color? colorRight;
   late Color? colorWrong;
+  List<Map<String, dynamic>> listQTrue = [];
+  late AudioPlayer player;
   double _height = 80;
+  double leap = 0;
+  final FlutterTts flutterTts = FlutterTts();
   bool checkSpam = true;
+
+  Future _speak() async {
+    await flutterTts.setLanguage('en-US');
+    await flutterTts.setPitch(1);
+    if (index < widget.data.length) {
+      await flutterTts.speak('${widget.data[index].two_question}');
+    }
+  }
 
   List<Widget> renderBox() {
     List<Widget> renderListBox = [];
-
     for (var i = 0; i < widget.data.length; i++) {
       renderListBox.add(box(
-        checkColor: CheckColor[i],
+        checkColor: checkColor[i],
         onClicked: onClicked[i],
       ));
     }
@@ -42,22 +53,17 @@ class _PlayGameState extends State<PlayGame> {
 
   @override
   void initState() {
+    player = AudioPlayer();
     colorRight = Colors.grey[300];
     colorWrong = Colors.grey[300];
     super.initState();
-    player = AudioPlayer();
-  }
-
-  @override
-  void dispose() {
-    player.dispose();
-    super.dispose();
+    _speak();
   }
 
   @override
   void didChangeDependencies() async {
     for (var i = 0; i < widget.data.length; i++) {
-      CheckColor.add(false);
+      checkColor.add(false);
       onClicked.add(false);
     }
     super.didChangeDependencies();
@@ -75,8 +81,9 @@ class _PlayGameState extends State<PlayGame> {
       };
       listQTrue.add(question);
       setState(() {
-        CheckColor[index] = true;
+        checkColor[index] = true;
         _height = 200;
+        leap = leap + 28;
       });
       await player.setAsset('assets/audio/dung.mp3');
       player.play();
@@ -90,6 +97,7 @@ class _PlayGameState extends State<PlayGame> {
       setState(() {
         count--;
         _height = 0;
+        leap = leap + 28;
       });
       await player.setAsset('assets/audio/tlsai.mp3');
       player.play();
@@ -101,11 +109,10 @@ class _PlayGameState extends State<PlayGame> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => Result(
-                listQTrue: listQTrue,
-                data: widget.data,
-              ),
-            ),
+                builder: (context) => Summary(
+                      listQTrue: listQTrue,
+                      data: widget.data,
+                    )),
           );
         },
       );
@@ -120,7 +127,7 @@ class _PlayGameState extends State<PlayGame> {
         width: MediaQuery.of(context).size.width,
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('lib/assets/bgr.jpg'),
+            image: AssetImage('lib/assets/bg.jpg'),
             fit: BoxFit.cover,
           ),
         ),
@@ -128,7 +135,6 @@ class _PlayGameState extends State<PlayGame> {
           padding: EdgeInsets.only(top: 8, left: 8, right: 8),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Row(
                 children: [
@@ -137,7 +143,7 @@ class _PlayGameState extends State<PlayGame> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => TurtleSwimming(title: ''),
+                          builder: (context) => WaitScreen(),
                         ),
                       );
                     },
@@ -191,19 +197,44 @@ class _PlayGameState extends State<PlayGame> {
                 ),
               ),
               SizedBox(
-                height: MediaQuery.of(context).size.height * 0.15,
+                height: MediaQuery.of(context).size.height * 0.10,
               ),
               Center(
                 child: Text(
                   (index >= widget.data.length)
-                      ? widget.data[widget.data.length - 1].question!
-                      : widget.data[index].question!,
+                      ? widget.data[widget.data.length - 1].two_question!
+                      : widget.data[index].two_question!,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+              ),
+              Center(
+                child: FloatingActionButton(
+                  backgroundColor: Colors.white30,
+                  onPressed: () {
+                    _speak();
+                  },
+                  child: Icon(
+                    Icons.mic_none,
+                    size: 32,
+                  ),
+                ),
+              ),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.1),
+              Stack(
+                children: [
+                  AnimatedPositioned(
+                    duration: Duration(milliseconds: 500),
+                    curve: Curves.linearToEaseOut,
+                    child: Container(
+                      margin: EdgeInsets.only(left: leap),
+                      child: Image.asset('lib/assets/people.png'),
+                    ),
+                  )
+                ],
               ),
               Expanded(child: Container()),
               Stack(
@@ -221,25 +252,24 @@ class _PlayGameState extends State<PlayGame> {
                                   if (checkSpam) {
                                     checkSpam = false;
                                     checkRight(widget.data[index].answer_one!);
-                                    setState(
-                                      () {
-                                        if (widget.data[index].answer_one! ==
-                                            widget.data[index].true_answer) {
-                                          colorWrong = Colors.green;
-                                        } else {
-                                          colorRight = Colors.red;
-                                        }
-                                        Timer(Duration(milliseconds: 500), () {
-                                          setState(() {
-                                            colorRight = Colors.grey[300];
-                                            colorWrong = Colors.grey[300];
-                                            index++;
-                                            _height = 80;
-                                            checkSpam = true;
-                                          });
+                                    setState(() {
+                                      if (widget.data[index].answer_one! ==
+                                          widget.data[index].true_answer) {
+                                        colorWrong = Colors.green;
+                                      } else {
+                                        colorRight = Colors.red;
+                                      }
+                                      Timer(Duration(milliseconds: 500), () {
+                                        setState(() {
+                                          colorRight = Colors.grey[300];
+                                          colorWrong = Colors.grey[300];
+                                          index++;
+                                          _height = 80;
+                                          checkSpam = true;
+                                          _speak();
                                         });
-                                      },
-                                    );
+                                      });
+                                    });
                                   }
                                 },
                                 child: Container(
@@ -270,25 +300,24 @@ class _PlayGameState extends State<PlayGame> {
                                   if (checkSpam) {
                                     checkSpam = false;
                                     checkRight(widget.data[index].answer_two!);
-                                    setState(
-                                      () {
-                                        if (widget.data[index].answer_two! ==
-                                            widget.data[index].true_answer) {
-                                          colorWrong = Colors.green;
-                                        } else {
-                                          colorRight = Colors.red;
-                                        }
-                                        Timer(Duration(milliseconds: 500), () {
-                                          setState(() {
-                                            colorRight = Colors.grey[300];
-                                            colorWrong = Colors.grey[300];
-                                            index++;
-                                            _height = 80;
-                                            checkSpam = true;
-                                          });
+                                    setState(() {
+                                      if (widget.data[index].answer_two! ==
+                                          widget.data[index].true_answer) {
+                                        colorWrong = Colors.green;
+                                      } else {
+                                        colorRight = Colors.red;
+                                      }
+                                      Timer(Duration(milliseconds: 500), () {
+                                        setState(() {
+                                          colorRight = Colors.grey[300];
+                                          colorWrong = Colors.grey[300];
+                                          index++;
+                                          _height = 80;
+                                          checkSpam = true;
+                                          _speak();
                                         });
-                                      },
-                                    );
+                                      });
+                                    });
                                   }
                                 },
                                 child: Container(
@@ -314,7 +343,7 @@ class _PlayGameState extends State<PlayGame> {
                               ),
                       ],
                     ),
-                  )
+                  ),
                 ],
               ),
               SizedBox(height: _height)

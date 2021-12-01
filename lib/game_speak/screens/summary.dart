@@ -1,34 +1,31 @@
-// ignore_for_file: prefer_const_constructors, file_names, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
-import 'package:gamemoonwalk/modules/model/question_item.dart';
-import 'package:gamemoonwalk/screens/play_game.dart';
-import 'package:gamemoonwalk/screens/splash.dart';
+import 'package:gamemoonwalk/game_speak/model/listen_item.dart';
+import 'package:gamemoonwalk/game_speak/screens/playing.dart';
+import 'package:gamemoonwalk/game_speak/screens/wait_screen.dart';
 
-class Result extends StatefulWidget {
+class Summary extends StatefulWidget {
+  const Summary({Key? key, required this.listQTrue, required this.data})
+      : super(key: key);
   final List<Map<String, dynamic>> listQTrue;
-  final List<QuestionItem> data;
-
-  const Result({
-    Key? key,
-    required this.listQTrue,
-    required this.data,
-  }) : super(key: key);
+  final List<ListenItem> data;
 
   @override
-  _ResultState createState() => _ResultState();
+  _SummaryState createState() => _SummaryState();
 }
 
-class _ResultState extends State<Result> {
+class _SummaryState extends State<Summary> {
   int totalTrue = 0;
+
   @override
   void didChangeDependencies() {
-    super.didChangeDependencies();
     for (var item in widget.listQTrue) {
       if (int.parse('${item["right"]}') == 1) {
         totalTrue++;
       }
     }
+    super.didChangeDependencies();
   }
 
   @override
@@ -69,11 +66,12 @@ class _ResultState extends State<Result> {
                         color:
                             totalTrue / 10 >= 0.3 ? Colors.yellow : Colors.grey,
                       ),
-                      Icon(Icons.star_rounded,
-                          size: 40,
-                          color: totalTrue / 10 >= 0.6
-                              ? Colors.yellow
-                              : Colors.grey),
+                      Icon(
+                        Icons.star_rounded,
+                        size: 40,
+                        color:
+                            totalTrue / 10 >= 0.6 ? Colors.yellow : Colors.grey,
+                      ),
                       Icon(
                         Icons.star_rounded,
                         size: 40,
@@ -119,13 +117,13 @@ class _ResultState extends State<Result> {
                   Container(
                     height: MediaQuery.of(context).size.height * 0.55,
                     child: ListView.builder(
+                      itemCount: widget.listQTrue.length,
                       itemBuilder: (context, index) {
                         return ListTile(
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                // 'Câu trả lời:  ${widget.listQTrue[index]['right'] == 1 ? widget.listQTrue[index]['questionObject'].true_answer : (widget.listQTrue[index]['questionObject'].true_answer == widget.listQTrue[index]['questionObject'].answer_one ? widget.listQTrue[index]['questionObject'].answer_two : widget.listQTrue[index]['questionObject'].answer_one)} ',
                                 'Câu trả lời:  ${widget.listQTrue[index]['answer']}',
                               ),
                               Container(
@@ -136,7 +134,8 @@ class _ResultState extends State<Result> {
                             ],
                           ),
                           title: Text(
-                            widget.listQTrue[index]['questionObject'].question,
+                            widget.listQTrue[index]['questionObject']
+                                .two_question,
                           ),
                           trailing: Icon(
                             widget.listQTrue[index]['right'] == 1
@@ -148,7 +147,6 @@ class _ResultState extends State<Result> {
                           ),
                         );
                       },
-                      itemCount: widget.listQTrue.length,
                     ),
                   ),
                   SizedBox(height: 16),
@@ -168,10 +166,8 @@ class _ResultState extends State<Result> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => PlayGame(
-                                data: widget.data,
-                              ),
-                            ),
+                                builder: (context) =>
+                                    Playing(data: widget.data)),
                           );
                         },
                         child: Container(
@@ -185,7 +181,7 @@ class _ResultState extends State<Result> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => TurtleSwimming(title: ''),
+                              builder: (context) => WaitScreen(),
                             ),
                           );
                         },

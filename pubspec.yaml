@@ -37,8 +37,8 @@ dependencies:
   ionicons: ^0.1.2
   http: ^0.13.4
   just_audio: ^0.9.18
-  
-  
+  flutter_tts: ^3.2.2
+
  
  
 dev_dependencies:

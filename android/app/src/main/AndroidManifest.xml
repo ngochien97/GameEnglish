@@ -1,5 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
         package="com.example.gamemoonwalk">
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
             android:label="gamemoonwalk"
             android:icon="@mipmap/ic_launcher">
@@ -40,6 +42,5 @@
                 android:name="flutterEmbedding"
                 android:value="2" />
         </application>
-    <uses-permission android:name="android.permission.INTERNET" />
 </manifest>
 

@@ -1,5 +1,7 @@
 // ignore_for_file: file_names, use_rethrow_when_possible
 import 'dart:convert';
+import 'dart:async';
+import 'dart:io';
 import 'package:gamemoonwalk/modules/model/theme_item.dart';
 
 import 'package:http/http.dart' as http;
@@ -8,7 +10,7 @@ String baseurl = 'api.myfeel.me';
 
 class RequestCategory {
   Future<List<ThemeItem>> fetchPosts() async {
-    final Uri uri = Uri.http(baseurl, 'Question/getListCategory');
+    final Uri uri = Uri.http(baseurl, '/Question/getListCategory');
     final List<ThemeItem> listCateParse = [];
     try {
       final http.Response response = await http.get(uri);

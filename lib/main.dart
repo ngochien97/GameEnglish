@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:gamemoonwalk/list_game/list_game.dart';
 import 'package:gamemoonwalk/screens/splash.dart';
 
 void main() {
@@ -13,10 +14,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'GameMoonWalk',
-      home: TurtleSwimming(
-        title: '',
-      ),
+      title: 'MiniGame',
+      home: List_game(),
     );
   }
 }

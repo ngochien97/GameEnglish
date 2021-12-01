@@ -1,52 +1,32 @@
-// ignore_for_file: prefer_const_constructors, file_names, prefer_const_literals_to_create_immutables, must_be_immutable, unused_local_variable, deprecated_member_use, unnecessary_string_interpolations, avoid_print, prefer_final_fields, must_call_super
+// ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors
 
-import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:gamemoonwalk/game_speak/model/category_item.dart';
+import 'package:gamemoonwalk/game_speak/model/listen_item.dart';
+import 'package:gamemoonwalk/game_speak/network/network_session.dart';
+import 'package:gamemoonwalk/game_speak/screens/playing.dart';
 import 'package:gamemoonwalk/list_game/list_game.dart';
-import 'package:gamemoonwalk/modules/request/request_catrgory.dart';
-import 'package:gamemoonwalk/modules/request/request_question.dart';
-import 'package:gamemoonwalk/modules/model/question_item.dart';
-import 'package:gamemoonwalk/modules/model/theme_item.dart';
-import 'package:gamemoonwalk/screens/play_game.dart';
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class WaitScreen extends StatefulWidget {
+  const WaitScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: TurtleSwimming(title: 'Game mini English'),
-    );
-  }
+  _WaitScreenState createState() => _WaitScreenState();
 }
 
-class TurtleSwimming extends StatefulWidget {
-  TurtleSwimming({Key? key, required this.title}) : super(key: key);
-
-  final String title;
-
-  @override
-  State<TurtleSwimming> createState() => _TurtleSwimmingState();
-}
-
-class _TurtleSwimmingState extends State<TurtleSwimming> {
-  List<ThemeItem> data = [];
-  List<QuestionItem> dataQuestion = [];
+class _WaitScreenState extends State<WaitScreen> {
+  List<CatrgoryItem> dataCategory = [];
+  List<ListenItem> dataListen = [];
 
   bool _isLoading = true;
 
   @override
   void didChangeDependencies() async {
     if (_isLoading) {
-      data = await RequestCategory().fetchPosts();
-      dataQuestion = await RequestQuestion().fetchPosts();
-      // print(data.toList().toString());
+      dataCategory = await CategoryResponse().fetchPosts();
+      dataListen = await QuestionResponse().fetchPosts();
     }
     setState(() {
       _isLoading = false;
@@ -54,7 +34,7 @@ class _TurtleSwimmingState extends State<TurtleSwimming> {
   }
 
   int randomInt(
-      Random random, List<int> arrRandom, List<QuestionItem> filterTopic) {
+      Random random, List<int> arrRandom, List<ListenItem> filterTopic) {
     var randomNum = random.nextInt(filterTopic.length);
     bool checkFlag = false;
     for (var i = 0; i < arrRandom.length; i++) {
@@ -69,17 +49,17 @@ class _TurtleSwimmingState extends State<TurtleSwimming> {
     }
   }
 
-  List<QuestionItem> filterTopicChoose10(int id) {
-    List<QuestionItem> filterTopic = [];
-    for (var i = 0; i < dataQuestion.length; i++) {
-      if (dataQuestion[i].cate_id == id) {
-        filterTopic.add(dataQuestion[i]);
+  List<ListenItem> filterTopicChoose10(int id) {
+    List<ListenItem> filterTopic = [];
+    for (var i = 0; i < dataListen.length; i++) {
+      if (dataListen[i].cate_id == id) {
+        filterTopic.add(dataListen[i]);
       }
     }
     if (filterTopic.length <= 10) {
       return filterTopic;
     } else {
-      List<QuestionItem> questionRandom = [];
+      List<ListenItem> questionRandom = [];
       List<int> arrRandomIndex = [];
       var random = Random();
       int randomNum = 0;
@@ -92,7 +72,6 @@ class _TurtleSwimmingState extends State<TurtleSwimming> {
           arrRandomIndex.add(randomNum);
         }
       }
-
       arrRandomIndex.forEach((element) {
         questionRandom.add(filterTopic[element]);
       });
@@ -110,7 +89,7 @@ class _TurtleSwimmingState extends State<TurtleSwimming> {
           height: MediaQuery.of(context).size.height,
           decoration: const BoxDecoration(
             image: DecorationImage(
-              image: AssetImage('lib/assets/bgr.jpg'),
+              image: AssetImage('lib/assets/bg.jpg'),
               fit: BoxFit.cover,
             ),
           ),
@@ -147,16 +126,16 @@ class _TurtleSwimmingState extends State<TurtleSwimming> {
                       Center(
                         child: Column(
                           children: [
-                            for (var item in data)
+                            for (var item in dataCategory)
                               GestureDetector(
                                 onTap: () {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => PlayGame(
-                                        data: filterTopicChoose10(item.id),
-                                      ),
-                                    ),
+                                        builder: (context) => Playing(
+                                              data:
+                                                  filterTopicChoose10(item.id),
+                                            )),
                                   );
                                 },
                                 child: Container(
